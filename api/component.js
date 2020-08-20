@@ -1,9 +1,9 @@
 const Promise = require('promise');
 
 class BaseComponent {
-  constructor(name, id) {
-    this._id = id;
-    this._name = name;
+  constructor(properties) {
+    this._id = properties.featureId;
+    this._name = properties.type;
   }
 
   get name() {
@@ -13,12 +13,20 @@ class BaseComponent {
   get id() {
     return this._id;
   }
+
+  get type() {
+    throw new Error('Abstract method. Must be defined in child class.');
+  }
 }
 
 class ReadOnlyComponent extends BaseComponent {
-  constructor(name, id, client) {
-    super(name, id);
+  constructor(properties, client) {
+    super(properties);
     this._client = client;
+  }
+
+  get type() {
+    return 'READ_ONLY_COMPONENT';
   }
 
   get() {
@@ -35,8 +43,12 @@ class ReadOnlyComponent extends BaseComponent {
 }
 
 class SmartComponent extends ReadOnlyComponent {
-  constructor(name, id, client) {
-    super(name, id, client);
+  constructor(properties, client) {
+    super(properties, client);
+  }
+
+  get type() {
+    return 'SMART_COMPONENT';
   }
 
   set(value) {
@@ -53,8 +65,22 @@ class SmartComponent extends ReadOnlyComponent {
   }
 }
 
-module.exports = {
-  BaseComponent: BaseComponent,
-  ReadOnlyComponent: ReadOnlyComponent,
-  SmartComponent: SmartComponent,
-};
+class ComponentFactory {
+  constructor(client) {
+    this.client = client;
+  }
+
+  create(json) {
+    // If we don't have writable property.
+    if (json.writable === undefined) {
+      throw new Error(`Missing 'writable' property. ${json}.`);
+    }
+
+    if (json.writable) {
+      return new SmartComponent(json, this.client);
+    }
+    return new ReadOnlyComponent(json, this.client);
+  }
+}
+
+module.exports = ComponentFactory;

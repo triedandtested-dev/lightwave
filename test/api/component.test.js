@@ -3,16 +3,28 @@ const assert = require('assert');
 const sinon = require('sinon');
 
 const Client = require('../../api/client');
-const {
-  BaseComponent,
-  ReadOnlyComponent,
-  SmartComponent} = require('../../api/component');
+const ComponentFactory = require('../../api/component');
 
+describe('A ReadOnlyComponent', () => {
 
-describe('A BaseComponent', () => {
+  let component;
+  let sClient;
+
+  beforeEach(() => {
+    // Stub client.
+    sClient = sinon.createStubInstance(Client);
+    // Create component factory.
+    let factory = new ComponentFactory(sClient);
+    // Create component.
+    component = factory.create({
+      featureId: 'component-id',
+      type: 'name',
+      writable: false,
+    });
+  });
+
   it('should return id.', () => {
     const expected = 'component-id';
-    const component = new BaseComponent('name', expected);
 
     let actual = component.id;
 
@@ -21,29 +33,31 @@ describe('A BaseComponent', () => {
 
   it('should return name.', () => {
     const expected = 'name';
-    const component = new BaseComponent(expected, 'component-id');
 
     let actual = component.name;
 
     assert.strictEqual(actual, expected);
   });
-});
 
-describe('A ReadOnlyComponent', () => {
+  it('should return type.', () => {
+    const expected = 'READ_ONLY_COMPONENT';
+
+    let actual = component.type;
+
+    assert.strictEqual(actual, expected);
+  });
+
   it('should get value using client.', async() => {
 
     const expected = 200;
 
-    let client = sinon.createStubInstance(Client);
-    client.getComponentValue.returns(Promise.resolve(expected));
-
-    let component = new ReadOnlyComponent('name', 'component-id', client);
+    sClient.getComponentValue.returns(Promise.resolve(expected));
 
     let actual = await component.get();
 
     assert.strictEqual(actual, expected);
     // Verify that method was called correctly.
-    assert.strictEqual(client
+    assert.strictEqual(sClient
       .getComponentValue
       .withArgs(component.id)
       .callCount, 1);
@@ -55,10 +69,7 @@ describe('A ReadOnlyComponent', () => {
       response: 'error has occurred.',
     };
 
-    let client = sinon.createStubInstance(Client);
-    client.getComponentValue.returns(Promise.reject(expected));
-
-    let component = new ReadOnlyComponent('name', 'component-id', client);
+    sClient.getComponentValue.returns(Promise.reject(expected));
 
     try {
       await component.get();
@@ -67,7 +78,7 @@ describe('A ReadOnlyComponent', () => {
     };
 
     // Verify that method was called correctly.
-    assert.strictEqual(client
+    assert.strictEqual(sClient
       .getComponentValue
       .withArgs(component.id)
       .callCount, 1);
@@ -77,21 +88,58 @@ describe('A ReadOnlyComponent', () => {
 
 describe('A SmartComponent', () => {
 
+  let component;
+  let sClient;
+
+  beforeEach(() => {
+    // Stub client.
+    sClient = sinon.createStubInstance(Client);
+    // Create component factory.
+    let factory = new ComponentFactory(sClient);
+    // Create component.
+    component = factory.create({
+      featureId: 'component-id',
+      type: 'name',
+      writable: true,
+    });
+  });
+
+  it('should return id.', () => {
+    const expected = 'component-id';
+
+    let actual = component.id;
+
+    assert.strictEqual(actual, expected);
+  });
+
+  it('should return name.', () => {
+    const expected = 'name';
+
+    let actual = component.name;
+
+    assert.strictEqual(actual, expected);
+  });
+
+  it('should return type.', () => {
+    const expected = 'SMART_COMPONENT';
+
+    let actual = component.type;
+
+    assert.strictEqual(actual, expected);
+  });
+
   it('should set a value using client.', async() => {
 
-    let client = sinon.createStubInstance(Client);
-    client.setComponentValue.returns(Promise.resolve());
+    sClient.setComponentValue.returns(Promise.resolve());
 
     const name = 'name';
     const expected = 200;
-
-    let component = new SmartComponent(name, 'component-id', client);
 
     let actual = await component.set(expected);
 
     assert.strictEqual(actual, `${name} set successfully.`);
     // Verify that method was called correctly.
-    assert.strictEqual(client
+    assert.strictEqual(sClient
       .setComponentValue
       .withArgs(component.id, expected)
       .callCount, 1);
@@ -104,12 +152,9 @@ describe('A SmartComponent', () => {
       response: 'error has occurred.',
     };
 
-    let client = sinon.createStubInstance(Client);
-    client.setComponentValue.returns(Promise.reject(expected));
+    sClient.setComponentValue.returns(Promise.reject(expected));
 
     const value = 200;
-
-    let component = new SmartComponent('name', 'component-id', client);
 
     try {
       await component.set(value);
@@ -118,9 +163,58 @@ describe('A SmartComponent', () => {
     }
 
     // Verify that method was called correctly.
-    assert.strictEqual(client
+    assert.strictEqual(sClient
       .setComponentValue
       .withArgs(component.id, value)
       .callCount, 1);
+  });
+});
+
+describe('A ComponentFactory', () => {
+  it('should return a SmartComponent when writable.', () => {
+
+    const factory = new ComponentFactory(null);
+
+    let data = {
+      type: 'componentType',
+      featureId: '465465-gr',
+      writable: true,
+    };
+
+    let actual = factory.create(data).type;
+
+    assert.strictEqual(actual, 'SMART_COMPONENT');
+
+  });
+
+  it('should return a ReadOnlyComponent when not writable.', () => {
+
+    const factory = new ComponentFactory(null);
+
+    let data = {
+      type: 'componentType',
+      featureId: '465465-gr',
+      writable: false,
+    };
+
+    let actual = factory.create(data).type;
+
+    assert.strictEqual(actual, 'READ_ONLY_COMPONENT');
+
+  });
+
+  it('should throw error when missing writable.', () => {
+
+    const factory = new ComponentFactory(null);
+
+    let data = {
+      type: 'componentType',
+      featureId: '465465-gr',
+    };
+
+    assert.throws(() => {
+      factory.create(data);
+    }, {name: 'Error', message: `Missing 'writable' property. ${data}.`});
+
   });
 });
