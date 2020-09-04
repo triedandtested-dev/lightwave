@@ -1,5 +1,5 @@
 {
-  "name": "@bd/lightwave",
+  "name": "@tandt/lightwave",
   "version": "0.0.1",
   "description": "A client for LightwaveRF API",
   "main": "index.js",
