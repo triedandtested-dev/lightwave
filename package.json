@@ -1,11 +1,11 @@
 {
   "name": "@bd/lightwave",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A client for LightwaveRF API",
   "main": "index.js",
   "scripts": {
     "pretest": "eslint --ignore-path .gitignore .",
-    "test": "c8 --check-coverage --lines 100 --functions 100 --branches 100 mocha --exit test/**/*.test.js"
+    "test": "c8 --check-coverage --lines 90 --functions 90 --branches 90 mocha --exit test/**/*.test.js"
   },
   "keywords": [],
   "author": "Bryan Dunkley",
@@ -23,12 +23,14 @@
   "homepage": "https://github.com/bryandunkley/lightwave#readme",
   "dependencies": {
     "axios": "^0.19.2",
+    "@google-cloud/firestore": "^4.0.0",
     "promise": "^8.1.0"
   },
   "devDependencies": {
+    "axios-mock-adapter": "^1.18.2",
+    "c8": "^v7.3.0",
     "eslint": "^7.7.0",
     "eslint-config-strongloop": "^2.1.0",
-    "c8": "^v7.3.0",
     "mocha": "^7.0.0",
     "sinon": "^9.0.2",
     "supertest": "^4.0.2"
