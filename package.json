@@ -1,5 +1,5 @@
 {
-  "name": "@bd/lightwave",
+  "name": "@tandt/lightwave",
   "version": "0.0.1",
   "description": "A client for LightwaveRF API",
   "main": "index.js",
@@ -15,12 +15,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bryandunkley/lightwave.git"
+    "url": "git+https://github.com/triedandtested-dev/lightwave.git"
   },
   "bugs": {
-    "url": "https://github.com/bryandunkley/lightwave/issues"
+    "url": "https://github.com/triedandtested-dev/lightwave/issues"
   },
-  "homepage": "https://github.com/bryandunkley/lightwave#readme",
+  "homepage": "https://github.com/triedandtested-dev/lightwave#readme",
   "dependencies": {
     "axios": "^0.19.2",
     "@google-cloud/firestore": "^4.0.0",
