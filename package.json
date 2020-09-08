@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "pretest": "eslint --ignore-path .gitignore .",
-    "test": "c8 --check-coverage --lines 90 --functions 90 --branches 90 mocha --exit test/**/*.test.js"
+    "test": "c8 --check-coverage --lines 90 --functions 90 --branches 90 mocha --exit test/**/*.test.js",
+    "codecov": "c8 --reporter=lcov npm test && codecov"
   },
   "keywords": [],
   "author": "Bryan Dunkley",
