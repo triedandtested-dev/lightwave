@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "pretest": "eslint --ignore-path .gitignore .",
-    "test": "c8 --check-coverage --lines 90 --functions 90 --branches 90 mocha --exit test/**/*.test.js"
+    "test": "c8 --check-coverage --lines 90 --functions 90 --branches 90 mocha --exit test/**/*.test.js",
+    "codecov": "c8 --reporter=lcov npm test && codecov"
   },
   "keywords": [],
   "author": "Bryan Dunkley",
@@ -29,6 +30,7 @@
   "devDependencies": {
     "axios-mock-adapter": "^1.18.2",
     "c8": "^v7.3.0",
+    "codecov": "^3.7.2",
     "eslint": "^7.7.0",
     "eslint-config-strongloop": "^2.1.0",
     "mocha": "^7.0.0",
